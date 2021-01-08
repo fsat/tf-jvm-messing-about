@@ -4,7 +4,7 @@ import java.nio.file.Paths
 import org.tensorflow.ndarray.{ NdArrays, StdArrays }
 import org.tensorflow.ndarray.buffer.ByteDataBuffer
 import org.tensorflow.op.Ops
-import org.tensorflow.{ SavedModelBundle, Tensor }
+import org.tensorflow.{ SavedModelBundle, Signature, Tensor }
 import org.tensorflow.types.{ TFloat32, TString }
 
 import scala.collection.JavaConverters._
@@ -27,7 +27,8 @@ object HelloUsemV3 {
     val usemV3SavedPath = "model/tf-hub/usem/v3/"
 
     println("Loading USEMv3 bundle...")
-    val usemV3Loader = SavedModelBundle.loader(usemV3SavedPath)
+    // This is how you load serving tag
+    val usemV3Loader = SavedModelBundle.loader(usemV3SavedPath).withTags("serve")
     println(usemV3Loader)
 
     // Make sure tensorflow text libraries is loaded right after USEMv3 is loaded.
@@ -44,9 +45,10 @@ object HelloUsemV3 {
     println(usemV3)
 
     try {
-      println("USEMv3 graph")
-      val graph = usemV3.graph()
-      println(graph)
+      // This is how you get signature similar to saved_model_cli
+      val defaultFunction = usemV3.function(Signature.DEFAULT_KEY)
+      val defaultFunctionSignature = defaultFunction.signature()
+      println(defaultFunctionSignature)
 
       // Todo send tensor to USEMv3 + fetch output embeddings
       // "input": [["I like to drink tea"]]
@@ -64,7 +66,8 @@ object HelloUsemV3 {
 
       //      tfOutputData.read(byteOutput)
       println(tfOutputData)
-      println(tfOutputData.getFloat(0, 1))
+      val stdArray = StdArrays.array2dCopyOf(tfOutput.data())
+      println(stdArray.toList.map(_.toList))
       //
       //      val tf = Ops.create()
       //      val x = tf.constant(tfOutput)
