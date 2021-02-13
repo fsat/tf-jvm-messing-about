@@ -63,25 +63,17 @@ object HelloUsemV3 {
       println(tfOutput.shape())
 
       val dimensions = tfOutput.shape().numDimensions()
+      println(dimensions)
       val shape = if (dimensions == -1)
         List(-1)
       else
         (0 until dimensions).map(tfOutput.shape().size)
 
-      println(shape)
+      println("shape: " + shape)
 
       val tfOutputData = tfOutput.data()
-
-      //      tfOutputData.read(byteOutput)
-      println(tfOutputData)
-      val stdArray = StdArrays.array2dCopyOf(tfOutput.data())
+      val stdArray = StdArrays.array2dCopyOf(tfOutputData)
       println(stdArray.toList.map(_.toList))
-      //
-      //      val tf = Ops.create()
-      //      val x = tf.constant(tfOutput)
-      //
-      //      println("--")
-      //      println(x.data())
 
     } finally {
       usemV3.close()
