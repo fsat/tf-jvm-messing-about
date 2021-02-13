@@ -62,6 +62,14 @@ object HelloUsemV3 {
       println(tfOutput.dataType())
       println(tfOutput.shape())
 
+      val dimensions = tfOutput.shape().numDimensions()
+      val shape = if (dimensions == -1)
+        List(-1)
+      else
+        (0 until dimensions).map(tfOutput.shape().size)
+
+      println(shape)
+
       val tfOutputData = tfOutput.data()
 
       //      tfOutputData.read(byteOutput)
